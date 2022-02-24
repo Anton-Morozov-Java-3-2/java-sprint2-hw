@@ -3,21 +3,17 @@ package task;
 public class Task {
     private String title;
     private String description;
-    private int id;
-    private String status;
+    private long id;
+    private Status status;
 
-    public static final String NEW = "NEW";
-    public static final String IN_PROGRESS = "IN_PROGRESS";
-    public static final String DONE = "DONE";
-
-    public Task(String title, String description, int id, String status) {
+    public Task(String title, String description, long id, Status status) {
         this.title = title;
         this.description = description;
         this.id = id;
         this.status = status;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -29,11 +25,11 @@ public class Task {
         return description;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    protected void setStatus(String status){
+    public void setStatus(Status status){
         this.status = status;
     }
 

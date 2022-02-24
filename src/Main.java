@@ -1,7 +1,8 @@
 import task.Epic;
+import task.Status;
 import task.Subtask;
 import task.Task;
-import task.TaskManager;
+import manager.TaskManager;
 
 import java.util.ArrayList;
 
@@ -11,23 +12,23 @@ public class Main {
         TaskManager manager = new TaskManager();
 
         Task invite = new Task("Пригласить друзей", "Согласовать удобное время для всех",
-                manager.getId(), Task.NEW);
+                manager.getId(), Status.NEW);
 
         Task cake = new Task("Купить торт", "Заказать в кондитерской с доставкой",
-                manager.getId(), Task.NEW);
+                manager.getId(), Status.NEW);
 
-        Epic tea = new Epic("Вскипятить чайник", "Чайник кипятит программист", manager.getId(), Task.NEW,
-                    new ArrayList<Integer>());
+        Epic tea = new Epic("Вскипятить чайник", "Чайник кипятит программист", manager.getId(),
+                Status.NEW, new ArrayList<Long>());
         Subtask init = new Subtask("Проинициализировать чайник", "Вылить воду из чайника и налить полный",
-                manager.getId(), Task.NEW, tea.getId());
+                manager.getId(), Status.NEW, tea.getId());
         Subtask boil = new Subtask("Вскипятить чайник",
-                "Поставить на плиту, зажечь газ и нагреть до кипения", manager.getId(), Task.NEW, tea.getId());
+                "Поставить на плиту, зажечь газ и нагреть до кипения", manager.getId(), Status.NEW, tea.getId());
         tea.addSubtask(init.getId());
         tea.addSubtask(boil.getId());
 
-        Epic coffee = new Epic("Сделать кофе", "Кофе в турке", manager.getId(), Task.NEW,
-                new ArrayList<Integer>());
-        Subtask grind = new Subtask("Помолоть кофе", "Помолоть кофе в пыль", manager.getId(), Task.NEW,
+        Epic coffee = new Epic("Сделать кофе", "Кофе в турке", manager.getId(), Status.NEW,
+                new ArrayList<Long>());
+        Subtask grind = new Subtask("Помолоть кофе", "Помолоть кофе в пыль", manager.getId(), Status.NEW,
                 coffee.getId());
         coffee.addSubtask(grind.getId());
 
@@ -59,8 +60,8 @@ public class Main {
         System.out.println("");
 
         invite = new Task("Пригласить друзей", "Согласовать удобное время для всех", invite.getId(),
-                Task.IN_PROGRESS);
-        cake = new Task("Купить торт", "Заказать в кондитерской с доставкой", cake.getId(), Task.DONE);
+                Status.IN_PROGRESS);
+        cake = new Task("Купить торт", "Заказать в кондитерской с доставкой", cake.getId(), Status.DONE);
         manager.updateTask(invite);
         manager.updateTask(cake);
 
@@ -76,9 +77,9 @@ public class Main {
         System.out.println("");
 
         init = new Subtask("Проинициализировать чайник", "Вылить воду из чайника и налить полный",
-                init.getId(), Task.DONE, init.getIdEpic());
+                init.getId(), Status.DONE, init.getIdEpic());
         boil = new Subtask("Вскипятить чайник",
-                "Поставить на плиту, зажечь газ и нагреть до кипения", boil.getId(), Task.IN_PROGRESS,
+                "Поставить на плиту, зажечь газ и нагреть до кипения", boil.getId(), Status.IN_PROGRESS,
                 boil.getIdEpic());
 
         manager.updateSubtask(init);
@@ -92,7 +93,7 @@ public class Main {
         System.out.println("После изменения статуса подзадач в Epic coffee");
         System.out.println("");
 
-        grind = new Subtask("Помолоть кофе", "Помолоть кофе в пыль", grind.getId(), Task.DONE,
+        grind = new Subtask("Помолоть кофе", "Помолоть кофе в пыль", grind.getId(), Status.DONE,
                 coffee.getId());
 
         manager.updateSubtask(grind);
