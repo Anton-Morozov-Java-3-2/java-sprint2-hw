@@ -1,3 +1,4 @@
+import manager.InMemoryTaskManager;
 import task.Epic;
 import task.Status;
 import task.Subtask;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
 
-        TaskManager manager = new TaskManager();
+        TaskManager manager = new InMemoryTaskManager();
 
         Task invite = new Task("Пригласить друзей", "Согласовать удобное время для всех",
                 manager.getId(), Status.NEW);
