@@ -3,9 +3,11 @@ package manager;
 import task.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager{
-    private final ArrayList<Task> history;
+    public static final int MAX_TASKS = 10;
+    private final List<Task> history;
 
     public InMemoryHistoryManager() {
         history = new ArrayList<>();
@@ -17,13 +19,13 @@ public class InMemoryHistoryManager implements HistoryManager{
             history.add(task);
         }
 
-        if (history.size() > MAX_TASK) {
+        if (history.size() > MAX_TASKS) {
             history.remove(0);
         }
     }
 
     @Override
-    public ArrayList<Task> getHistory(){
+    public List<Task> getHistory(){
         return history;
     }
 }
