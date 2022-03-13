@@ -58,30 +58,30 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeAllSubtasks() {
         for (Long id: subtasks.keySet()) {
-            removeSubtaskById(id);
+            removeSubtask(id);
         }
     }
 
     @Override
     public void removeAllEpics() {
         for (Long id: epics.keySet()) {
-            removeEpicById(id);
+            removeEpic(id);
         }
     }
 
     // 2.3 Получение по идентификатору
     @Override
-    public Task getTaskById(Long id){
+    public Task getTask(Long id){
         return tasks.get(id);
     }
 
     @Override
-    public Subtask getSubtaskById(Long id){
+    public Subtask getSubtask(Long id){
         return subtasks.get(id);
     }
 
     @Override
-    public Epic getEpicById(Long id){
+    public Epic getEpic(Long id){
         defineStatusEpic(id);
         return epics.get(id);
     }
@@ -126,12 +126,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     // 2.5 Удаление по идентификатору
     @Override
-    public void removeTaskById(Long id) {
+    public void removeTask(Long id) {
         tasks.remove(id);
     }
 
     @Override
-    public void removeSubtaskById(Long id){
+    public void removeSubtask(Long id){
         Subtask subtask = subtasks.get(id);
         Epic epic = epics.get(subtask.getIdEpic());
         epic.removeSubtaskById(id);
@@ -139,7 +139,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void removeEpicById(Long id) {
+    public void removeEpic(Long id) {
         Epic epic = epics.get(id);
         for (Long i: epic.getSubtasks()) {
             subtasks.remove(i);
@@ -150,7 +150,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     // 3.1 Получение списка подзадач определённого task.Epic
     @Override
-    public ArrayList<Subtask> getSubtasksEpicById(Long id) {
+    public ArrayList<Subtask> getSubtasksEpic(Long id) {
         Epic epic = epics.get(id);
         ArrayList<Subtask> request = new ArrayList<>();
         for (Long i: epic.getSubtasks()) {
@@ -160,10 +160,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     // 4.2 Управление статусами эпиков
-    @Override
-    public void defineStatusEpic(Long id) {
+    private void defineStatusEpic(Long id) {
         Epic epic = epics.get(id);
-        ArrayList<Subtask> subtask = getSubtasksEpicById(id);
+        ArrayList<Subtask> subtask = getSubtasksEpic(id);
         if (subtask.size() == 0) {
             epic.setStatus(Status.NEW);
         } else {

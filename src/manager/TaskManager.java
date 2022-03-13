@@ -24,9 +24,9 @@ public interface TaskManager {
 
     // 2.3 Получение по идентификатору
 
-    Task getTaskById(Long id);
-    Subtask getSubtaskById(Long id);
-    Epic getEpicById(Long id);
+    Task getTask(Long id);
+    Subtask getSubtask(Long id);
+    Epic getEpic(Long id);
 
     // 2.4 Создание
 
@@ -42,17 +42,16 @@ public interface TaskManager {
 
     // 2.5 Удаление по идентификатору
 
-    void removeTaskById(Long id);
-    void removeSubtaskById(Long id);
-    void removeEpicById(Long id);
+    void removeTask(Long id);
+    void removeSubtask(Long id);
+    void removeEpic(Long id);
 
     // 3.1 Получение списка подзадач определённого task.Epic
 
-    ArrayList<Subtask> getSubtasksEpicById(Long id);
+    ArrayList<Subtask> getSubtasksEpic(Long id);
 
     // 4.2 Управление статусами эпиков
-
-    void defineStatusEpic(Long id);
+    // внутренняя реализация конкретного класса и не является методом интерфейса
 }
 
 

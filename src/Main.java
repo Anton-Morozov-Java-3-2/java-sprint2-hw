@@ -1,4 +1,6 @@
+import manager.HistoryManager;
 import manager.InMemoryTaskManager;
+import manager.Managers;
 import task.Epic;
 import task.Status;
 import task.Subtask;
@@ -6,11 +8,17 @@ import task.Task;
 import manager.TaskManager;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
 
 public class Main {
     public static void main(String[] args) {
 
-        TaskManager manager = new InMemoryTaskManager();
+        TaskManager manager = Managers.getDefault();
+        HistoryManager history = Managers.getHistory();
+
+        System.out.println("Начальное состояние объектов");
+        System.out.println("");
 
         Task invite = new Task("Пригласить друзей", "Согласовать удобное время для всех",
                 manager.getId(), Status.NEW);
@@ -43,21 +51,27 @@ public class Main {
         manager.createEpic(coffee);
         manager.createSubtask(grind);
 
-        System.out.println("Начальное состояние объектов");
-        System.out.println("");
-
         for (Task t: manager.getAllTasks()){
+            history.add(t);
             System.out.println(t);
         }
 
         for (Subtask s: manager.getAllSubtasks()){
+            history.add(s);
             System.out.println(s);
         }
 
         for (Epic e: manager.getAllEpics()){
+            history.add(e);
             System.out.println(e);
         }
 
+        System.out.println("История просмотров: ");
+        System.out.println(printHistory(history.getHistory()));
+        System.out.println("");
+        System.out.println("");
+
+        System.out.println("После изменения статуса задач");
         System.out.println("");
 
         invite = new Task("Пригласить друзей", "Согласовать удобное время для всех", invite.getId(),
@@ -66,10 +80,8 @@ public class Main {
         manager.updateTask(invite);
         manager.updateTask(cake);
 
-        System.out.println("После изменения статуса задач");
-        System.out.println("");
-
         for (Task t: manager.getAllTasks()){
+            history.add(t);
             System.out.println(t);
         }
 
@@ -86,9 +98,16 @@ public class Main {
         manager.updateSubtask(init);
         manager.updateSubtask(boil);
 
-        System.out.println(manager.getSubtaskById(init.getId()));
-        System.out.println(manager.getSubtaskById(boil.getId()));
-        System.out.println(manager.getEpicById(init.getIdEpic()));
+        System.out.println(manager.getSubtask(init.getId()));
+        history.add(manager.getSubtask(init.getId()));
+        System.out.println(manager.getSubtask(boil.getId()));
+        history.add(manager.getSubtask(boil.getId()));
+        System.out.println(manager.getEpic(init.getIdEpic()));
+        history.add(manager.getEpic(init.getIdEpic()));
+
+        System.out.println("История просмотров: ");
+        System.out.println(printHistory(history.getHistory()));
+        System.out.println("");
 
         System.out.println("");
         System.out.println("После изменения статуса подзадач в Epic coffee");
@@ -98,28 +117,55 @@ public class Main {
                 coffee.getId());
 
         manager.updateSubtask(grind);
-        System.out.println(manager.getSubtaskById(grind.getId()));
-        System.out.println(manager.getEpicById(grind.getIdEpic()));
+
+        System.out.println(manager.getSubtask(grind.getId()));
+        history.add(manager.getSubtask(grind.getId()));
+
+        System.out.println(manager.getEpic(grind.getIdEpic()));
+        history.add(manager.getEpic(grind.getIdEpic()));
+
+        System.out.println("История просмотров: ");
+        System.out.println(printHistory(history.getHistory()));
+        System.out.println("");
 
         System.out.println("");
         System.out.println("После изменения удаления задачи с тортом");
         System.out.println("");
 
-        manager.removeTaskById(cake.getId());
+        manager.removeTask(cake.getId());
         for (Task t: manager.getAllTasks()){
+            history.add(t);
             System.out.println(t);
         }
+
+        System.out.println("История просмотров: ");
+        System.out.println(printHistory(history.getHistory()));
+        System.out.println("");
 
         System.out.println("");
         System.out.println("После изменения удаления Epic coffee");
         System.out.println("");
 
-        manager.removeEpicById(coffee.getId());
+        manager.removeEpic(coffee.getId());
         for (Epic e: manager.getAllEpics()){
+            history.add(e);
             System.out.println(e);
         }
         for (Subtask s: manager.getAllSubtasks()){
+            history.add(s);
             System.out.println(s);
         }
+
+        System.out.println("История просмотров: ");
+        System.out.println(printHistory(history.getHistory()));
+        System.out.println("");
+    }
+
+    public static String printHistory(List<Task> history) {
+        String out = "";
+        for (Task t : history){
+            out += t.getId() + " ";
+        }
+        return out;
     }
 }
