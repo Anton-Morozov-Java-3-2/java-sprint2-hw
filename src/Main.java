@@ -7,6 +7,7 @@ import task.Task;
 import manager.TaskManager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Main {
@@ -15,151 +16,79 @@ public class Main {
         TaskManager manager = Managers.getDefault();
         HistoryManager history = Managers.getHistory();
 
-        System.out.println("Начальное состояние объектов");
-        System.out.println("");
+        // создать две задачи
+        Task task1 = new Task("Задача 1", "Тест", manager.getId(), Status.NEW);
+        manager.createTask(task1);
 
-        Task invite = new Task("Пригласить друзей", "Согласовать удобное время для всех",
-                manager.getId(), Status.NEW);
+        Task task2 = new Task("Задача 2", "Тест", manager.getId(), Status.NEW);
+        manager.createTask(task2);
 
-        Task cake = new Task("Купить торт", "Заказать в кондитерской с доставкой",
-                manager.getId(), Status.NEW);
+        Epic epic1 = new Epic("Эпик 1", "Тест", manager.getId(), Status.NEW, new ArrayList<Long>());
 
-        Epic tea = new Epic("Вскипятить чайник", "Чайник кипятит программист", manager.getId(),
-                Status.NEW, new ArrayList<Long>());
-        Subtask init = new Subtask("Проинициализировать чайник", "Вылить воду из чайника и налить полный",
-                manager.getId(), Status.NEW, tea.getId());
-        Subtask boil = new Subtask("Вскипятить чайник",
-                "Поставить на плиту, зажечь газ и нагреть до кипения", manager.getId(), Status.NEW, tea.getId());
-        tea.addSubtask(init.getId());
-        tea.addSubtask(boil.getId());
+        Subtask subtask1 = new Subtask("Подзадача 1", "Тест", manager.getId(), Status.NEW, epic1.getId());
+        Subtask subtask2 = new Subtask("Подзадача 2", "Тест", manager.getId(), Status.NEW, epic1.getId());
+        Subtask subtask3 = new Subtask("Подзадача 3", "Тест", manager.getId(), Status.NEW, epic1.getId());
 
-        Epic coffee = new Epic("Сделать кофе", "Кофе в турке", manager.getId(), Status.NEW,
-                new ArrayList<Long>());
-        Subtask grind = new Subtask("Помолоть кофе", "Помолоть кофе в пыль", manager.getId(), Status.NEW,
-                coffee.getId());
-        coffee.addSubtask(grind.getId());
+        epic1.addSubtask(subtask1.getId());
+        epic1.addSubtask(subtask2.getId());
+        epic1.addSubtask(subtask3.getId());
 
-        manager.createTask(invite);
-        manager.createTask(cake);
+        manager.createEpic(epic1);
+        manager.createSubtask(subtask1);
+        manager.createSubtask(subtask2);
+        manager.createSubtask(subtask3);
 
-        manager.createEpic(tea);
-        manager.createSubtask(init);
-        manager.createSubtask(boil);
+        Epic epic2 = new Epic("Эпик 2", "Тест", manager.getId(), Status.NEW, new ArrayList<Long>());
+        manager.createEpic(epic2);
 
-        manager.createEpic(coffee);
-        manager.createSubtask(grind);
+        manager.getTask(task1.getId());
+        history.add(task1);
 
-        for (Task t: manager.getAllTasks()){
+        manager.getTask(task2.getId());
+        history.add(task2);
+
+        System.out.println("Запросили задачи 0, 1");
+        System.out.println(printHistory(history.getHistory()));
+
+        manager.getTask(task2.getId());
+        history.add(task1);
+
+        System.out.println("Запросили задачу 0");
+        System.out.println(printHistory(history.getHistory()));
+
+        for (Task t: manager.getSubtasksEpic(epic1.getId())) {
             history.add(t);
-            System.out.println(t);
         }
 
-        for (Subtask s: manager.getAllSubtasks()){
-            history.add(s);
-            System.out.println(s);
-        }
+        System.out.println("Запросили подзадачи 3, 4, 5");
+        System.out.println(printHistory(history.getHistory()));
 
-        for (Epic e: manager.getAllEpics()){
+        for (Task e: manager.getAllEpics()) {
             history.add(e);
-            System.out.println(e);
         }
 
-        System.out.println("История просмотров: ");
+        System.out.println("Запросили эпики 2, 6");
         System.out.println(printHistory(history.getHistory()));
-        System.out.println("");
-        System.out.println("");
 
-        System.out.println("После изменения статуса задач");
-        System.out.println("");
+        manager.getTask(task1.getId());
+        history.add(task1);
 
-        invite = new Task("Пригласить друзей", "Согласовать удобное время для всех", invite.getId(),
-                Status.IN_PROGRESS);
-        cake = new Task("Купить торт", "Заказать в кондитерской с доставкой", cake.getId(), Status.DONE);
-        manager.updateTask(invite);
-        manager.updateTask(cake);
+        manager.getTask(task2.getId());
+        history.add(task2);
 
-        for (Task t: manager.getAllTasks()){
-            history.add(t);
-            System.out.println(t);
-        }
-
-        System.out.println("");
-        System.out.println("После изменения статуса подзадач Epic tea");
-        System.out.println("");
-
-        init = new Subtask("Проинициализировать чайник", "Вылить воду из чайника и налить полный",
-                init.getId(), Status.DONE, init.getIdEpic());
-        boil = new Subtask("Вскипятить чайник",
-                "Поставить на плиту, зажечь газ и нагреть до кипения", boil.getId(), Status.IN_PROGRESS,
-                boil.getIdEpic());
-
-        manager.updateSubtask(init);
-        manager.updateSubtask(boil);
-
-        System.out.println(manager.getSubtask(init.getId()));
-        history.add(manager.getSubtask(init.getId()));
-        System.out.println(manager.getSubtask(boil.getId()));
-        history.add(manager.getSubtask(boil.getId()));
-        System.out.println(manager.getEpic(init.getIdEpic()));
-        history.add(manager.getEpic(init.getIdEpic()));
-
-        System.out.println("История просмотров: ");
+        System.out.println("Запросили задачи 0, 1");
         System.out.println(printHistory(history.getHistory()));
-        System.out.println("");
 
-        System.out.println("");
-        System.out.println("После изменения статуса подзадач в Epic coffee");
-        System.out.println("");
-
-        grind = new Subtask("Помолоть кофе", "Помолоть кофе в пыль", grind.getId(), Status.DONE,
-                coffee.getId());
-
-        manager.updateSubtask(grind);
-
-        System.out.println(manager.getSubtask(grind.getId()));
-        history.add(manager.getSubtask(grind.getId()));
-
-        System.out.println(manager.getEpic(grind.getIdEpic()));
-        history.add(manager.getEpic(grind.getIdEpic()));
-
-        System.out.println("История просмотров: ");
+        System.out.println("Удаляем задачу 0");
+        history.remove(task1.getId());
         System.out.println(printHistory(history.getHistory()));
-        System.out.println("");
 
-        System.out.println("");
-        System.out.println("После изменения удаления задачи с тортом");
-        System.out.println("");
-
-        manager.removeTask(cake.getId());
-        for (Task t: manager.getAllTasks()){
-            history.add(t);
-            System.out.println(t);
-        }
-
-        System.out.println("История просмотров: ");
+        System.out.println("Удаляем эпик 2");
+        history.remove(epic1.getId());
         System.out.println(printHistory(history.getHistory()));
-        System.out.println("");
-
-        System.out.println("");
-        System.out.println("После изменения удаления Epic coffee");
-        System.out.println("");
-
-        manager.removeEpic(coffee.getId());
-        for (Epic e: manager.getAllEpics()){
-            history.add(e);
-            System.out.println(e);
-        }
-        for (Subtask s: manager.getAllSubtasks()){
-            history.add(s);
-            System.out.println(s);
-        }
-
-        System.out.println("История просмотров: ");
-        System.out.println(printHistory(history.getHistory()));
-        System.out.println("");
     }
 
-    public static String printHistory(List<Task> history) {
+    public static String printHistory(Collection<Task> history) {
         String out = "";
         for (Task t : history){
             out += t.getId() + " ";

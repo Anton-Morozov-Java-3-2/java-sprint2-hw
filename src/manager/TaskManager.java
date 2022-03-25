@@ -4,7 +4,7 @@ import task.Epic;
 import task.Subtask;
 import task.Task;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 public interface TaskManager {
 
@@ -12,9 +12,9 @@ public interface TaskManager {
 
     // 2.1 Получение списка всех задач
 
-    ArrayList<Task> getAllTasks();
-    ArrayList<Subtask> getAllSubtasks();
-    ArrayList<Epic> getAllEpics();
+    Collection<Task> getAllTasks();
+    Collection<Subtask> getAllSubtasks();
+    Collection<Epic> getAllEpics();
 
     // 2.2 Удаление всех задач
 
@@ -48,7 +48,7 @@ public interface TaskManager {
 
     // 3.1 Получение списка подзадач определённого task.Epic
 
-    ArrayList<Subtask> getSubtasksEpic(Long id);
+    Collection<Subtask> getSubtasksEpic(Long id);
 
     // 4.2 Управление статусами эпиков
     // внутренняя реализация конкретного класса и не является методом интерфейса

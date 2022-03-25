@@ -7,12 +7,14 @@ import task.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Collection;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private final HashMap<Long, Task> tasks;
-    private final HashMap<Long, Subtask> subtasks;
-    private final HashMap<Long, Epic> epics;
+    private final Map<Long, Task> tasks;
+    private final Map<Long, Subtask> subtasks;
+    private final Map<Long, Epic> epics;
     private long countId;
 
     @Override
@@ -30,18 +32,18 @@ public class InMemoryTaskManager implements TaskManager {
     // 2.1 Получение списка всех задач
 
     @Override
-    public ArrayList<Task> getAllTasks(){
+    public Collection<Task> getAllTasks(){
         return new ArrayList<>(tasks.values());
     }
 
     @Override
-    public ArrayList<Subtask> getAllSubtasks(){
+    public Collection<Subtask> getAllSubtasks(){
         return new ArrayList<>(subtasks.values());
     }
 
     @Override
-    public ArrayList<Epic> getAllEpics(){
-        ArrayList<Epic> request = new ArrayList<>();
+    public Collection<Epic> getAllEpics(){
+        Collection<Epic> request = new ArrayList<>();
         for (Epic epic: epics.values()) {
             defineStatusEpic(epic.getId());
             request.add(epic);
@@ -150,7 +152,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     // 3.1 Получение списка подзадач определённого task.Epic
     @Override
-    public ArrayList<Subtask> getSubtasksEpic(Long id) {
+    public Collection<Subtask> getSubtasksEpic(Long id) {
         Epic epic = epics.get(id);
         ArrayList<Subtask> request = new ArrayList<>();
         for (Long i: epic.getSubtasks()) {
@@ -162,7 +164,7 @@ public class InMemoryTaskManager implements TaskManager {
     // 4.2 Управление статусами эпиков
     private void defineStatusEpic(Long id) {
         Epic epic = epics.get(id);
-        ArrayList<Subtask> subtask = getSubtasksEpic(id);
+        Collection<Subtask> subtask = getSubtasksEpic(id);
         if (subtask.size() == 0) {
             epic.setStatus(Status.NEW);
         } else {

@@ -1,20 +1,19 @@
 package manager;
 
 import task.Task;
+import task.Epic;
 
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-
+import java.util.Collection;
 
 public class InMemoryHistoryManager implements HistoryManager{
     public static final int MAX_TASKS = 10;
-    private final Map<Long, Node<Task>> idTasks;
+    private final Map<Long, Node> idTasks;
 
-    private Node<Task> head;
-    private Node<Task> tail;
+    private Node head;
+    private Node tail;
     private int size;
 
     public InMemoryHistoryManager() {
@@ -37,79 +36,71 @@ public class InMemoryHistoryManager implements HistoryManager{
         }
 
         if (size() > MAX_TASKS) {
-            remove(getFirst().task.getId());
+            remove(getFirst().getTask().getId());
         }
     }
 
     @Override
     public void remove(long id) {
+
+        Task t = idTasks.get(id).getTask();
+        if (t instanceof Epic) {
+            Epic e = (Epic) t;
+            for (Long i : e.getSubtasks()) {
+                removeNode(idTasks.get(i));
+                idTasks.remove(i);
+            }
+        }
         removeNode(idTasks.get(id));
         idTasks.remove(id);
     }
 
     @Override
-    public List<Task> getHistory(){
+    public Collection<Task> getHistory(){
         return getTasks();
     }
 
-    private Node<Task> linkLast(Task t){
-        final Node<Task> oldNode = tail;
-        tail = new Node<Task>(oldNode, t, null);
+    private Node linkLast(Task t){
+        final Node oldNode = tail;
+        tail = new Node(oldNode, t, null);
         if (oldNode == null) {
             head = tail;
         } else {
-            tail.prev = oldNode;
-            oldNode.next = tail;
+            tail.setPrev(oldNode);
+            oldNode.setNext(tail);
         }
         size++;
         return tail;
     }
 
-    private List<Task> getTasks() {
-        List <Task> tasks = new ArrayList<>();
-        Node<Task> node = head;
+    private Collection<Task> getTasks() {
+        Collection <Task> tasks = new ArrayList<>();
+        Node node = head;
         while ( node != null) {
-            tasks.add(node.task);
-            node = node.next;
+            tasks.add(node.getTask());
+            node = node.getNext();
         }
         return tasks;
     }
 
-    private void removeNode(Node<Task> node) {
-        if (node != head && node !=tail) {
-            node.prev.next = node.next;
-            node.next.prev = node.prev;
-        } else if (node == head && size > 1) {
-            head = head.next;
-            head.prev = null;
-        } else if (node == tail && size > 1){
-            tail = tail.prev;
-            tail.next = null;
-        } else {
-            head = null;
-            tail = null;
-        }
-        --size;
-    }
-
-    private void removeNode1(Node<Task> node) {
+    private void removeNode(Node node) {
         if (head == node && tail == node) {
             head = null;
             tail = null;
         } else if (node == head) {
-            head = head.next;
-            head.prev = null;
+            head = head.getNext();
+            head.setPrev(null);
         } else if (node == tail) {
-            tail = tail.prev;
-            tail.next = null;
+            tail = tail.getPrev();
+            tail.setNext(null);
         } else {
-            node.prev.next = node.next;
-            node.next.prev = node.prev;
+            node.getPrev().setNext(node.getNext());
+            node.getNext().setPrev(node.getPrev());
         }
         --size;
     }
 
-    private Node<Task> getFirst() {
+    private Node getFirst() {
         return head;
     }
 
