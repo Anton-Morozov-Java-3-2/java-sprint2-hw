@@ -43,16 +43,18 @@ public class InMemoryHistoryManager implements HistoryManager{
     @Override
     public void remove(long id) {
 
-        Task t = idTasks.get(id).getTask();
-        if (t instanceof Epic) {
-            Epic e = (Epic) t;
-            for (Long i : e.getSubtasks()) {
-                removeNode(idTasks.get(i));
-                idTasks.remove(i);
+        if (idTasks.containsKey(id)) {
+            Task t = idTasks.get(id).getTask();
+            if (t instanceof Epic) {
+                Epic e = (Epic) t;
+                for (Long i : e.getSubtasks()) {
+                    removeNode(idTasks.get(i));
+                    idTasks.remove(i);
+                }
             }
+            removeNode(idTasks.get(id));
+            idTasks.remove(id);
         }
-        removeNode(idTasks.get(id));
-        idTasks.remove(id);
     }
 
     @Override
@@ -106,6 +108,30 @@ public class InMemoryHistoryManager implements HistoryManager{
 
     public int size() {
         return size;
+    }
+
+    public static String toString(HistoryManager manager) {
+        if (manager != null) {
+            StringBuilder str = new StringBuilder();
+            for (Task t : manager.getHistory()) {
+                str.append(t.getId());
+                str.append(",");
+            }
+            if (str.length() > 0) str.deleteCharAt(str.length() - 1);
+            return str.toString();
+        } else {
+            return null;
+        }
+    }
+
+    public static Collection<Long> fromString(String value) {
+        Collection<Long> history = new ArrayList<>();
+
+        String[] data = value.split(",");
+        for (String s : data) {
+            history.add(Long.parseLong(s));
+        }
+        return history;
     }
 }
 

@@ -1,14 +1,12 @@
-import manager.HistoryManager;
-import manager.Managers;
+import manager.*;
 import task.Epic;
 import task.Status;
 import task.Subtask;
 import task.Task;
-import manager.TaskManager;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -83,9 +81,11 @@ public class Main {
         history.remove(task1.getId());
         System.out.println(printHistory(history.getHistory()));
 
-        System.out.println("Удаляем эпик 2");
-        history.remove(epic1.getId());
+        System.out.println("Удаляем эпик 1");
+        //history.remove(epic1.getId());
+        manager.removeEpic(epic1.getId());
         System.out.println(printHistory(history.getHistory()));
+        System.out.println();
     }
 
     public static String printHistory(Collection<Task> history) {

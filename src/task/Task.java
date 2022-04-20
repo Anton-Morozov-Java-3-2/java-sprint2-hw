@@ -1,5 +1,7 @@
 package task;
 
+import java.util.ArrayList;
+
 public class Task {
     private String title;
     private String description;
@@ -35,11 +37,15 @@ public class Task {
 
     @Override
     public String toString() {
-        return "task.Task{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status='" + status + '\'' +
-                '}';
+        return id + "," + Type.TASK + "," + title + "," + status + ","+ description + ",\n";
+    }
+
+    static public Task fromString(String value) {
+        if (value != null) {
+            String[] data = value.split(",");
+            return new Task(data[2], data[4], Long.parseLong(data[0]), Status.valueOf(data[3]));
+        } else {
+            return null;
+        }
     }
 }

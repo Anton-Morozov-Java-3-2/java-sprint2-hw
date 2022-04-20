@@ -7,13 +7,9 @@ public class Epic extends Task{
 
     @Override
     public String toString() {
-        return "task.Epic{" +
-                "title='" + getTitle() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", id=" + getId() +
-                ", status='" + getStatus() + '\'' +
-                ", subtasks.length=" + subtasks.size()  +
-                '}';
+        return  getId() + "," + Type.EPIC + "," +
+                getTitle() + "," + getStatus() + "," +
+                getDescription() + ",\n";
     }
 
     public Epic(String title, String description, Long id, Status status, ArrayList<Long> subtasks) {
@@ -41,5 +37,15 @@ public class Epic extends Task{
 
     public void removeAllSubtasks(){
         subtasks.clear();
+    }
+
+
+    static public Epic fromString(String value) {
+        if (value != null) {
+            String[] data = value.split(",");
+            return new Epic(data[2], data[4], Long.parseLong(data[0]), Status.valueOf(data[3]), new ArrayList<>());
+        } else {
+            return null;
+        }
     }
 }
