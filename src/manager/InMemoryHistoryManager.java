@@ -6,10 +6,10 @@ import task.Epic;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Collection;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager{
-    public static final int MAX_TASKS = 10;
+    private static final int MAX_TASKS = 10;
     private final Map<Long, Node> idTasks;
 
     private Node head;
@@ -18,10 +18,6 @@ public class InMemoryHistoryManager implements HistoryManager{
 
     public InMemoryHistoryManager() {
         idTasks = new HashMap<>();
-
-        head = null;
-        tail = null;
-        size = 0;
     }
 
     @Override
@@ -58,7 +54,7 @@ public class InMemoryHistoryManager implements HistoryManager{
     }
 
     @Override
-    public Collection<Task> getHistory(){
+    public List<Task> getHistory(){
         return getTasks();
     }
 
@@ -75,8 +71,8 @@ public class InMemoryHistoryManager implements HistoryManager{
         return tail;
     }
 
-    private Collection<Task> getTasks() {
-        Collection <Task> tasks = new ArrayList<>();
+    private List<Task> getTasks() {
+        List<Task> tasks = new ArrayList<>();
         Node node = head;
         while ( node != null) {
             tasks.add(node.getTask());
@@ -124,8 +120,8 @@ public class InMemoryHistoryManager implements HistoryManager{
         }
     }
 
-    public static Collection<Long> fromString(String value) {
-        Collection<Long> history = new ArrayList<>();
+    public static List<Long> fromString(String value) {
+        List<Long> history = new ArrayList<>();
 
         String[] data = value.split(",");
         for (String s : data) {

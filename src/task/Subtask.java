@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Subtask extends Task{
     private long idEpic;
 
-    public Subtask(String title, String description, long id, Status status, long idEpic) {
-        super(title, description, id, status);
+    public Subtask(String title, String description, Status status, long idEpic) {
+        super(title, description, status);
         this.idEpic = idEpic;
     }
 
@@ -25,9 +25,9 @@ public class Subtask extends Task{
     static public Subtask fromString(String value) {
         if (value != null) {
             String[] data = value.split(",");
-
-            return new Subtask(data[2], data[4], Long.parseLong(data[0]),
-                    Status.valueOf(data[3]), Long.parseLong(data[5]));
+            Subtask s = new Subtask(data[2], data[4], Status.valueOf(data[3]), Long.parseLong(data[5]));
+            s.setId(Long.parseLong(data[0]));
+            return s;
         } else {
             return null;
         }

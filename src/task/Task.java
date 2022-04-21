@@ -8,15 +8,23 @@ public class Task {
     private long id;
     private Status status;
 
-    public Task(String title, String description, long id, Status status) {
+    public Task(String title, String description, Status status) {
         this.title = title;
         this.description = description;
-        this.id = id;
         this.status = status;
+    }
+
+    public Task(String title, String description) {
+        this.title = title;
+        this.description = description;
     }
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -43,7 +51,9 @@ public class Task {
     static public Task fromString(String value) {
         if (value != null) {
             String[] data = value.split(",");
-            return new Task(data[2], data[4], Long.parseLong(data[0]), Status.valueOf(data[3]));
+            Task t = new Task(data[2], data[4], Status.valueOf(data[3]));
+            t.setId(Long.parseLong(data[0]));
+            return t;
         } else {
             return null;
         }

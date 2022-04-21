@@ -10,15 +10,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
 
     private static final String header = "id,type,name,status,description,epic\n";
     private final File file;
-    private final HistoryManager history;
 
     public FileBackedTasksManager(File file) {
         super();
         this.file = file;
-        this.history = Managers.getHistory();
     }
 
-    public static FileBackedTasksManager loadFromFile(File file) throws IOException {
+    public static FileBackedTasksManager loadFromFile(File file) {
 
         try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(file))) {
             FileBackedTasksManager manager = new FileBackedTasksManager(file);
@@ -31,11 +29,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
             }
             return manager;
         } catch (IOException e) {
-            throw new IOException("Ошибка чтения фала");
+            throw new RuntimeException("Ошибка чтения фала");
         }
     }
 
-    public Collection<Task> getHistory() {
+    public List<Task> getHistory() {
         return history.getHistory();
     }
 
@@ -65,11 +63,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
             long id = 0L;
             if (data[i].indexOf(Type.EPIC.toString()) > 0) {
                 Epic e = Epic.fromString(data[i]);
-                super.createTask(e);
+                super.createEpic(e, e.getId());
                 id = e.getId();
             } else if (data[i].indexOf(Type.SUBTASK.toString()) > 0) {
                 Subtask s = Subtask.fromString(data[i]);
-                super.createSubtask(s);
+                super.createSubtask(s, s.getId());
                 id = s.getId();
             } else {
                 Task t = Task.fromString(data[i]);
@@ -90,7 +88,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         if (data != null) {
             String s = data[data.length - 1];
             if (!s.isEmpty() && !s.isBlank()) {
-                Collection<Long> id = InMemoryHistoryManager.fromString(s);
+                List<Long> id = InMemoryHistoryManager.fromString(s);
                 for (Long l : id) {
                     if (super.getTask(l) != null) {
                         history.add(super.getTask(l));
@@ -106,8 +104,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     }
 
     private void initializationEpics() {
-        for (Epic e : super.getAllEpics()) {
-            for (Subtask s : super.getAllSubtasks()) {
+        for (Epic e : getAllEpics()) {
+            for (Subtask s : getAllSubtasks()) {
                 if (s.getIdEpic() == e.getId()) {
                     e.addSubtask(s.getId());
                 }
@@ -117,13 +115,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
 
     public Collection<String> getTaskInString(){
         List<String> str = new ArrayList<>();
-        for (Task t : super.getAllTasks()) {
+        for (Task t : getAllTasks()) {
             str.add(t.toString());
         }
-        for (Subtask s : super.getAllSubtasks()) {
+        for (Subtask s : getAllSubtasks()) {
             str.add(s.toString());
         }
-        for (Epic e : super.getAllEpics()) {
+        for (Epic e : getAllEpics()) {
             str.add(e.toString());
         }
         sortTaskStringById(str);
@@ -143,7 +141,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     @Override
     public Task getTask(Long id) {
         Task t = super.getTask(id);
-        history.add(t);
         save();
         return t;
     }
@@ -151,7 +148,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     @Override
     public Subtask getSubtask(Long id) {
         Subtask s = super.getSubtask(id);
-        history.add(s);
         save();
         return s;
     }
@@ -159,67 +155,24 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     @Override
     public Epic getEpic(Long id) {
         Epic e = super.getEpic(id);
-        history.add(e);
         save();
         return e;
     }
 
     @Override
-    public Collection<Task> getAllTasks() {
-        Collection<Task> tasks = super.getAllTasks();
-        for (Task t : tasks) {
-            history.add(t);
-        }
-        save();
-        return tasks;
-    }
-
-    @Override
-    public Collection<Subtask> getAllSubtasks() {
-        Collection<Subtask> subtasks = super.getAllSubtasks();
-        for (Subtask s : subtasks) {
-            history.add(s);
-        }
-        save();
-        return subtasks;
-    }
-
-    @Override
-    public Collection<Epic> getAllEpics() {
-        Collection<Epic> epics = super.getAllEpics();
-        for (Epic e : epics) {
-            history.add(e);
-        }
-        save();
-        return epics;
-    }
-
-    @Override
     public void removeAllTasks() {
-        Collection<Task> tasks = super.getAllTasks();
-        for (Task t : tasks) {
-            history.remove(t.getId());
-        }
         super.removeAllTasks();
         save();
     }
 
     @Override
     public void removeAllSubtasks() {
-        Collection<Subtask> subtasks = super.getAllSubtasks();
-        for (Subtask s : subtasks) {
-            history.remove(s.getId());
-        }
         super.removeAllSubtasks();
         save();
     }
 
     @Override
     public void removeAllEpics() {
-        Collection<Epic> epics = super.getAllEpics();
-        for (Task e : epics) {
-            history.remove(e.getId());
-        }
         super.removeAllEpics();
         save();
     }
@@ -263,21 +216,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     @Override
     public void removeTask(Long id) {
         super.removeTask(id);
-        history.remove(id);
         save();
     }
 
     @Override
     public void removeSubtask(Long id){
         super.removeSubtask(id);
-        history.remove(id);
         save();
     }
 
     @Override
     public void removeEpic(Long id) {
         super.removeEpic(id);
-        history.remove(id);
         save();
     }
 
@@ -287,28 +237,24 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
 
         FileBackedTasksManager old = new FileBackedTasksManager(file);
 
-        Task task1 = new Task("Задача 1", "Тест", old.getId(), Status.NEW);
-        Task task2 = new Task("Задача 2", "Тест", old.getId(), Status.NEW);
+        Task task1 = new Task("Задача 1", "Тест", Status.NEW);
+        Task task2 = new Task("Задача 2", "Тест", Status.NEW);
 
         old.createTask(task1);
         old.createTask(task2);
 
-        Epic epic1 = new Epic("Эпик 1", "Тест", old.getId(), Status.NEW, new ArrayList<Long>());
-        Subtask subtask1 = new Subtask("Подзадача 1", "Тест", old.getId(), Status.NEW, epic1.getId());
-        Subtask subtask2 = new Subtask("Подзадача 2", "Тест", old.getId(), Status.NEW, epic1.getId());
-        Subtask subtask3 = new Subtask("Подзадача 3", "Тест", old.getId(), Status.NEW, epic1.getId());
+        Epic epic1 = new Epic("Эпик 1", "Тест");
+        Subtask subtask1 = new Subtask("Подзадача 1", "Тест", Status.NEW, epic1.getId());
+        Subtask subtask2 = new Subtask("Подзадача 2", "Тест", Status.NEW, epic1.getId());
+        Subtask subtask3 = new Subtask("Подзадача 3", "Тест", Status.NEW, epic1.getId());
 
-        epic1.addSubtask(subtask1.getId());
-        epic1.addSubtask(subtask2.getId());
-        epic1.addSubtask(subtask3.getId());
+        old.createEpic(epic1);
 
         old.createSubtask(subtask1);
         old.createSubtask(subtask2);
         old.createSubtask(subtask3);
 
-        old.createEpic(epic1);
-
-        Epic epic2 = new Epic("Эпик 2", "Тест", old.getId(), Status.NEW, new ArrayList<Long>());
+        Epic epic2 = new Epic("Эпик 2", "Тест");
         old.createEpic(epic2);
 
         old.getTask(task1.getId());
@@ -344,7 +290,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
             }
 
 
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             System.out.println("Ошибка при загрузке");
         }
     }

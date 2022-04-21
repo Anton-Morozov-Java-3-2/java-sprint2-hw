@@ -3,7 +3,7 @@ package task;
 import java.util.ArrayList;
 
 public class Epic extends Task{
-    private ArrayList<Long> subtasks;
+    private final ArrayList<Long> subtasks;
 
     @Override
     public String toString() {
@@ -12,13 +12,9 @@ public class Epic extends Task{
                 getDescription() + ",\n";
     }
 
-    public Epic(String title, String description, Long id, Status status, ArrayList<Long> subtasks) {
-        super(title, description, id, status);
-        if (subtasks != null) {
-            this.subtasks = subtasks;
-        } else {
-            this.subtasks = new ArrayList<>();
-        }
+    public Epic(String title, String description) {
+        super(title, description);
+        this.subtasks = new ArrayList<>();
     }
 
     public void addSubtask(Long id) {
@@ -43,7 +39,10 @@ public class Epic extends Task{
     static public Epic fromString(String value) {
         if (value != null) {
             String[] data = value.split(",");
-            return new Epic(data[2], data[4], Long.parseLong(data[0]), Status.valueOf(data[3]), new ArrayList<>());
+            Epic e = new Epic(data[2], data[4]);
+            e.setId(Long.parseLong(data[0]));
+            e.setStatus(Status.valueOf(data[3]));
+            return e;
         } else {
             return null;
         }
