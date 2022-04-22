@@ -12,15 +12,21 @@ public class Task {
         this.title = title;
         this.description = description;
         this.status = status;
+        this.id = -1L;
     }
 
     public Task(String title, String description) {
         this.title = title;
         this.description = description;
+        this.id = -1L;
     }
 
     public long getId() {
         return id;
+    }
+
+    public boolean isNotSetId() {
+        return id < 0L;
     }
 
     public void setId(long id) {

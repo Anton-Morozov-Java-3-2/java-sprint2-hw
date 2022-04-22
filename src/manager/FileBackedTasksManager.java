@@ -62,17 +62,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
 
             long id = 0L;
             if (data[i].indexOf(Type.EPIC.toString()) > 0) {
-                Epic e = Epic.fromString(data[i]);
-                super.createEpic(e, e.getId());
-                id = e.getId();
+                Epic epic = Epic.fromString(data[i]);
+                super.createEpic(epic);
+                id = epic.getId();
             } else if (data[i].indexOf(Type.SUBTASK.toString()) > 0) {
-                Subtask s = Subtask.fromString(data[i]);
-                super.createSubtask(s, s.getId());
-                id = s.getId();
+                Subtask subtask = Subtask.fromString(data[i]);
+                super.createSubtask(subtask);
+                id = subtask.getId();
             } else {
-                Task t = Task.fromString(data[i]);
-                super.createTask(t);
-                id = t.getId();
+                Task task = Task.fromString(data[i]);
+                super.createTask(task);
+                id = task.getId();
             }
 
             if (max_id < id) {
@@ -88,16 +88,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         if (data != null) {
             String s = data[data.length - 1];
             if (!s.isEmpty() && !s.isBlank()) {
-                List<Long> id = InMemoryHistoryManager.fromString(s);
-                for (Long l : id) {
-                    if (super.getTask(l) != null) {
-                        history.add(super.getTask(l));
-                    } else if (super.getSubtask(l) != null) {
-                        history.add(super.getSubtask(l));
-                    } else {
-                        history.add(super.getEpic(l));
-                    }
-
+                List<Long> idHistory = InMemoryHistoryManager.fromString(s);
+                for (Long id : idHistory) {
+                    super.getTask(id);
+                    super.getSubtask(id);
+                    super.getEpic(id);
                 }
             }
         }
@@ -113,7 +108,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         }
     }
 
-    public Collection<String> getTaskInString(){
+    public List<String> getTaskInString(){
         List<String> str = new ArrayList<>();
         for (Task t : getAllTasks()) {
             str.add(t.toString());
@@ -140,23 +135,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
 
     @Override
     public Task getTask(Long id) {
-        Task t = super.getTask(id);
+        Task task = super.getTask(id);
         save();
-        return t;
+        return task;
     }
 
     @Override
     public Subtask getSubtask(Long id) {
-        Subtask s = super.getSubtask(id);
+        Subtask subtask = super.getSubtask(id);
         save();
-        return s;
+        return subtask;
     }
 
     @Override
     public Epic getEpic(Long id) {
-        Epic e = super.getEpic(id);
+        Epic epic = super.getEpic(id);
         save();
-        return e;
+        return epic;
     }
 
     @Override
@@ -244,11 +239,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         old.createTask(task2);
 
         Epic epic1 = new Epic("Эпик 1", "Тест");
+        old.createEpic(epic1);
+
         Subtask subtask1 = new Subtask("Подзадача 1", "Тест", Status.NEW, epic1.getId());
         Subtask subtask2 = new Subtask("Подзадача 2", "Тест", Status.NEW, epic1.getId());
         Subtask subtask3 = new Subtask("Подзадача 3", "Тест", Status.NEW, epic1.getId());
-
-        old.createEpic(epic1);
 
         old.createSubtask(subtask1);
         old.createSubtask(subtask2);
@@ -257,41 +252,48 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         Epic epic2 = new Epic("Эпик 2", "Тест");
         old.createEpic(epic2);
 
+        // смотрим задачи 0, 1
         old.getTask(task1.getId());
         old.getTask(task2.getId());
 
+        // смотрим подзадачу 3
         old.getSubtask(subtask1.getId());
+
+        // Смотрим эпики 2, 6
         old.getEpic(epic1.getId());
         old.getEpic(epic2.getId());
 
-        try {
-            FileBackedTasksManager newManager = FileBackedTasksManager.loadFromFile(file);
 
-            String old_data = String.join(",",old.getTaskInString());
-            String new_data = String.join(",", newManager.getTaskInString());
+        subtask1.setStatus(Status.IN_PROGRESS);
+        old.updateSubtask(subtask1);
+        subtask2.setStatus(Status.DONE);
+        old.updateSubtask(subtask2);
+        subtask3.setStatus(Status.DONE);
+        old.updateSubtask(subtask3);
 
-            if (old_data.equals(new_data)) {
-                System.out.println("Тест 1 пройден успешно");
-            } else {
-                System.out.println("Тест 1 провален!");
-            }
+        // удаляем задачу 0
+        old.removeTask(task1.getId());
 
-            InMemoryHistoryManager.toString(old.history);
+        FileBackedTasksManager newManager = FileBackedTasksManager.loadFromFile(file);
 
-            String old_history_data = InMemoryHistoryManager.toString(old.history);;
-            String new_history_data = InMemoryHistoryManager.toString(newManager.history);;
+        String old_data = String.join(",",old.getTaskInString());
+        String new_data = String.join(",", newManager.getTaskInString());
 
-            if (old_history_data.equals(new_history_data)) {
-                System.out.println("Тест 2 пройден успешно");
-            } else {
-                System.out.println("Тест 2 провален!");
-                System.out.println(old_history_data);
-                System.out.println(new_history_data);
-            }
+        if (old_data.equals(new_data)) {
+            System.out.println("Тест 1 пройден успешно");
+        } else {
+            System.out.println("Тест 1 провален!");
+        }
 
+        String old_history_data = InMemoryHistoryManager.toString(old.history);;
+        String new_history_data = InMemoryHistoryManager.toString(newManager.history);;
 
-        } catch (RuntimeException e) {
-            System.out.println("Ошибка при загрузке");
+        if (old_history_data.equals(new_history_data)) {
+            System.out.println("Тест 2 пройден успешно");
+        } else {
+            System.out.println("Тест 2 провален!");
+            System.out.println(old_history_data);
+            System.out.println(new_history_data);
         }
     }
 }

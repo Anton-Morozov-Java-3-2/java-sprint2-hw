@@ -21,7 +21,6 @@ public class Subtask extends Task{
                 getDescription() + "," + getIdEpic() + ",\n";
     }
 
-
     static public Subtask fromString(String value) {
         if (value != null) {
             String[] data = value.split(",");
