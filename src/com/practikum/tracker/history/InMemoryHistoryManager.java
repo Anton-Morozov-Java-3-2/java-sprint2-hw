@@ -1,7 +1,7 @@
-package manager;
+package com.practikum.tracker.history;
 
-import task.Task;
-import task.Epic;
+import com.practikum.tracker.model.Task;
+import com.practikum.tracker.model.Epic;
 
 import java.util.ArrayList;
 import java.util.Map;

@@ -1,6 +1,6 @@
-package manager;
+package com.practikum.tracker.history;
 
-import task.Task;
+import com.practikum.tracker.model.Task;
 
 class Node {
     private Node prev;

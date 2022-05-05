@@ -1,7 +1,7 @@
-package manager;
+package com.practikum.tracker.history;
 
 import java.util.List;
-import task.Task;
+import com.practikum.tracker.model.Task;
 
 
 public interface HistoryManager {

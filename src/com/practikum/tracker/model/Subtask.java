@@ -1,9 +1,7 @@
-package task;
+package com.practikum.tracker.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 
 public class Subtask extends Task{
     private long idEpic;

@@ -1,19 +1,21 @@
-package manager;
+package com.practikum.tracker.test;
 
+import com.practikum.tracker.manager.FileBackedTasksManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import task.Epic;
-import task.Status;
-import task.Subtask;
-import task.Task;
+import com.practikum.tracker.model.Epic;
+import com.practikum.tracker.model.Status;
+import com.practikum.tracker.model.Subtask;
+import com.practikum.tracker.model.Task;
+
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 
-public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackedTasksManager>{
+public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
     private File file;
 
@@ -27,7 +29,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackedTasksM
     public void standardActionSave(){
         StringBuilder savedString = new StringBuilder();
 
-        Task task = new Task("task 0", "test", Status.NEW);
+        Task task = new Task("com.practikum.tracker.task 0", "test", Status.NEW);
         task.setDefaultTimeAndDuration();
         manager.createTask(task);
 
@@ -80,7 +82,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackedTasksM
     @Test
     public void standardActionLoad(){
 
-        Task task = new Task("task 0", "test", Status.NEW);
+        Task task = new Task("com.practikum.tracker.task 0", "test", Status.NEW);
         task.setDefaultTimeAndDuration();
         manager.createTask(task);
 
@@ -122,7 +124,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackedTasksM
 
     @Test
     public void actionSaveEmptyTaskAndHistory(){
-        Task task = new Task("task 0", "test", Status.NEW);
+        Task task = new Task("com.practikum.tracker.task 0", "test", Status.NEW);
         task.setDefaultTimeAndDuration();
         manager.createTask(task);
         manager.getTask(task.getId());
@@ -148,7 +150,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackedTasksM
     @Test
     public void actionLoadEmptyTaskAndHistory(){
 
-        Task task = new Task("task 0", "test", Status.NEW);
+        Task task = new Task("com.practikum.tracker.task 0", "test", Status.NEW);
         task.setDefaultTimeAndDuration();
         manager.createTask(task);
         manager.getTask(task.getId());
@@ -172,7 +174,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackedTasksM
     public void actionSaveEmptyHistory(){
         StringBuilder savedString = new StringBuilder();
 
-        Task task = new Task("task 0", "test", Status.NEW);
+        Task task = new Task("com.practikum.tracker.task 0", "test", Status.NEW);
         manager.createTask(task);
 
         Epic epic = new Epic("epic 0", "test");

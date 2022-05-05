@@ -1,4 +1,4 @@
-package task;
+package com.practikum.tracker.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -130,6 +130,7 @@ public class Task {
     public void setDefaultTimeAndDuration(){
 
         startTime = LocalDateTime.now().withNano(0);
+
         duration = Duration.ofMinutes(DEFAULT_DURATION_MINUTES);
     }
 }

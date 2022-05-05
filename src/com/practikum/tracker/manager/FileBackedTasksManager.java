@@ -1,5 +1,6 @@
-package manager;
-import task.*;
+package com.practikum.tracker.manager;
+import com.practikum.tracker.history.InMemoryHistoryManager;
+import com.practikum.tracker.model.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

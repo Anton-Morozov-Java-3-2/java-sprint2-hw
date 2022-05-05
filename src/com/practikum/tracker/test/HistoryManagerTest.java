@@ -1,18 +1,19 @@
-package manager;
+package com.practikum.tracker.test;
 
+import com.practikum.tracker.history.HistoryManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import task.Status;
-import task.Task;
+import com.practikum.tracker.model.Status;
+import com.practikum.tracker.model.Task;
 
 import java.util.List;
 
-abstract class HistoryManagerTest  {
+public abstract class HistoryManagerTest  {
     public HistoryManager manager;
 
     @Test
     public void standardActionAdd() {
-        Task task = new Task("task", "test", Status.NEW);
+        Task task = new Task("com/practikum/tracker/model", "test", Status.NEW);
         task.setId(1L);
 
         manager.add(task);
@@ -26,7 +27,7 @@ abstract class HistoryManagerTest  {
 
     @Test
     public void actionAddDuplicateTask() {
-        Task task = new Task("task", "test", Status.NEW);
+        Task task = new Task("com/practikum/tracker/model", "test", Status.NEW);
         task.setId(1L);
 
         manager.add(task);
@@ -50,15 +51,15 @@ abstract class HistoryManagerTest  {
 
     @Test
     public void standardActionRemoveFirst(){
-        Task task1 = new Task("task 1", "test", Status.NEW);
+        Task task1 = new Task("com.practikum.tracker.task 1", "test", Status.NEW);
         task1.setId(1L);
         manager.add(task1);
 
-        Task task2 = new Task("task 2", "test", Status.NEW);
+        Task task2 = new Task("com.practikum.tracker.task 2", "test", Status.NEW);
         task2.setId(2L);
         manager.add(task2);
 
-        Task task3 = new Task("task 3", "test", Status.NEW);
+        Task task3 = new Task("com.practikum.tracker.task 3", "test", Status.NEW);
         task3.setId(3L);
         manager.add(task3);
 
@@ -73,15 +74,15 @@ abstract class HistoryManagerTest  {
 
     @Test
     public void standardActionRemoveLast(){
-        Task task1 = new Task("task 1", "test", Status.NEW);
+        Task task1 = new Task("com.practikum.tracker.task 1", "test", Status.NEW);
         task1.setId(1L);
         manager.add(task1);
 
-        Task task2 = new Task("task 2", "test", Status.NEW);
+        Task task2 = new Task("com.practikum.tracker.task 2", "test", Status.NEW);
         task2.setId(2L);
         manager.add(task2);
 
-        Task task3 = new Task("task 3", "test", Status.NEW);
+        Task task3 = new Task("com.practikum.tracker.task 3", "test", Status.NEW);
         task3.setId(3L);
         manager.add(task3);
 
@@ -96,15 +97,15 @@ abstract class HistoryManagerTest  {
 
     @Test
     public void standardActionRemoveMiddle(){
-        Task task1 = new Task("task 1", "test", Status.NEW);
+        Task task1 = new Task("com.practikum.tracker.task 1", "test", Status.NEW);
         task1.setId(1L);
         manager.add(task1);
 
-        Task task2 = new Task("task 2", "test", Status.NEW);
+        Task task2 = new Task("com.practikum.tracker.task 2", "test", Status.NEW);
         task2.setId(2L);
         manager.add(task2);
 
-        Task task3 = new Task("task 3", "test", Status.NEW);
+        Task task3 = new Task("com.practikum.tracker.task 3", "test", Status.NEW);
         task3.setId(3L);
         manager.add(task3);
 

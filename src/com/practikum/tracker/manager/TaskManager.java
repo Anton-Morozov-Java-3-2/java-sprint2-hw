@@ -1,10 +1,11 @@
-package manager;
+package com.practikum.tracker.manager;
 
-import task.Epic;
-import task.Subtask;
-import task.Task;
+import com.practikum.tracker.model.Epic;
+import com.practikum.tracker.model.Subtask;
+import com.practikum.tracker.model.Task;
 
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
 
@@ -46,10 +47,10 @@ public interface TaskManager {
     void removeSubtask(Long id);
     void removeEpic(Long id);
 
-    // 3.1 Получение списка подзадач определённого task.Epic
+    // 3.1 Получение списка подзадач определённого com.practikum.tracker.task.Epic
 
     List<Subtask> getSubtasksEpic(Long id);
-    List<Task> getPrioritizedTasks();
+    TreeSet<Task> getPrioritizedTasks();
 
     // 4.2 Управление статусами эпиков
     // внутренняя реализация конкретного класса и не является методом интерфейса

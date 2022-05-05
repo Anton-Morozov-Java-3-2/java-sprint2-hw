@@ -1,19 +1,20 @@
-package manager;
+package com.practikum.tracker.test;
 
+import com.practikum.tracker.manager.TaskManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import task.Epic;
-import task.Status;
-import task.Subtask;
-import task.Task;
+import com.practikum.tracker.model.Epic;
+import com.practikum.tracker.model.Status;
+import com.practikum.tracker.model.Subtask;
+import com.practikum.tracker.model.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.TreeSet;
 
 
-abstract class TaskManagerTest<T extends TaskManager> {
+public abstract class TaskManagerTest<T extends TaskManager> {
 
     public T manager;
 
@@ -21,11 +22,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     // методы инициализации списка задач
     List<Task> initTestTasks(){
-        Task t1 = new Task("task 0", "test", Status.NEW);
+        Task t1 = new Task("com.practikum.tracker.task 0", "test", Status.NEW);
         t1.setDefaultTimeAndDuration();
-        Task t2 = new Task("task 1", "test", Status.IN_PROGRESS);
+        Task t2 = new Task("com.practikum.tracker.task 1", "test", Status.IN_PROGRESS);
         t2.setDefaultTimeAndDuration();
-        Task t3 = new Task("task 2", "test", Status.DONE);
+        Task t3 = new Task("com.practikum.tracker.task 2", "test", Status.DONE);
         t3.setDefaultTimeAndDuration();
 
         manager.createTask(t1);
@@ -83,7 +84,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         List<Task> actual = manager.getAllTasks();
         Assertions.assertNotNull(actual, "вернул null");
         Assertions.assertArrayEquals(expected.toArray(), actual.toArray(), "списки объектов не совпадают");
-        List<Task> tasks = manager.getPrioritizedTasks();
+        TreeSet<Task> tasks = manager.getPrioritizedTasks();
         Assertions.assertArrayEquals(expected.toArray(), tasks.toArray());
     }
 
@@ -94,7 +95,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertNotNull(actual, "вернул null");
         Assertions.assertArrayEquals(expected.toArray(), actual.toArray(), "списки объектов не совпадают");
 
-        List<Task> tasks = manager.getPrioritizedTasks();
+        TreeSet<Task> tasks = manager.getPrioritizedTasks();
         Assertions.assertArrayEquals(expected.toArray(), tasks.toArray());
     }
 
@@ -255,7 +256,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         LocalDateTime start = LocalDateTime.of(2022, 5, 12, 8, 30, 0);
         Duration duration = Duration.ofMinutes(30);
 
-        Task expected = new Task("task", "test");
+        Task expected = new Task("com/practikum/tracker/model", "test");
         expected.setStartTime(start);
         expected.setDuration(duration);
 
@@ -264,26 +265,26 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Task actual = manager.getTask(expected.getId());
         Assertions.assertNotNull(actual, "не сохранено");
         Assertions.assertEquals(expected, actual, "не совпадают");
-        List<Task> tasks = manager.getPrioritizedTasks();
+        TreeSet<Task> tasks = manager.getPrioritizedTasks();
         Assertions.assertEquals(1, tasks.size());
-        Assertions.assertEquals(actual, tasks.get(0));
+        Assertions.assertEquals(actual, tasks.first());
 
     }
 
     @Test
     public void actionCreateTaskWithDefaultTime() {
 
-        Task expected = new Task("task", "test");
+        Task expected = new Task("com/practikum/tracker/model", "test");
         expected.setDefaultTimeAndDuration();
 
         manager.createTask(expected);
 
         Task actual = manager.getTask(expected.getId());
-        List<Task> tasks = manager.getPrioritizedTasks();
+        TreeSet<Task> tasks = manager.getPrioritizedTasks();
         Assertions.assertNotNull(actual, "не сохранено");
         Assertions.assertEquals(expected, actual, "не совпадают");
         Assertions.assertEquals(1, tasks.size());
-        Assertions.assertEquals(actual, tasks.get(0));
+        Assertions.assertEquals(actual, tasks.first());
 
     }
 
@@ -296,7 +297,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         List<Task> actual = manager.getAllTasks();
 
-        List<Task> tasks = manager.getPrioritizedTasks();
+        TreeSet<Task> tasks = manager.getPrioritizedTasks();
 
         Assertions.assertNotNull(actual, "нет списка задач");
         Assertions.assertEquals(expected, actual, "список задач изменился");
@@ -325,9 +326,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertTrue(epic.getStartTime().isEqual(start));
         Assertions.assertTrue(epic.getEndTime().isEqual(actual.getEndTime()));
 
-        List<Task> tasks = manager.getPrioritizedTasks();
+        TreeSet<Task> tasks = manager.getPrioritizedTasks();
         Assertions.assertEquals(1, tasks.size());
-        Assertions.assertEquals(actual, tasks.get(0));
+        Assertions.assertEquals(actual, tasks.first());
     }
 
     @Test
@@ -342,7 +343,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertNotNull(actual, "нет списка Epic");
         Assertions.assertEquals(expected, actual, "не совпадают");
 
-        List<Task> tasks = manager.getPrioritizedTasks();
+        TreeSet<Task> tasks = manager.getPrioritizedTasks();
         Assertions.assertEquals(3, tasks.size());
     }
 
@@ -468,12 +469,12 @@ abstract class TaskManagerTest<T extends TaskManager> {
         LocalDateTime startOld = LocalDateTime.of(2022, 5, 12, 8, 30, 0);
         Duration durationOLd = Duration.ofMinutes(30);
 
-        Task task = new Task("task", "test", Status.NEW);
+        Task task = new Task("com/practikum/tracker/model", "test", Status.NEW);
         task.setStartTime(startOld);
         task.setDuration(durationOLd);
         manager.createTask(task);
 
-        Task expected = new Task("task update", "test update", Status.DONE);
+        Task expected = new Task("com.practikum.tracker.task update", "test update", Status.DONE);
         expected.setStartTime(startOld);
         expected.setDuration(Duration.ofMinutes(60));
         expected.setId(task.getId());
@@ -486,9 +487,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals(expected.getId(), task.getId(), "id не совпадают");
         Assertions.assertNotEquals(actual, task, "задача не обновлена");
 
-        List<Task> tasks = manager.getPrioritizedTasks();
+        TreeSet<Task> tasks = manager.getPrioritizedTasks();
         Assertions.assertEquals(1, tasks.size());
-        Assertions.assertEquals(actual, tasks.get(0));
+        Assertions.assertEquals(actual, tasks.first());
 
     }
 
@@ -503,10 +504,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void actionUpdateTaskErrorId() {
-        Task task = new Task("task", "test", Status.NEW);
+        Task task = new Task("com/practikum/tracker/model", "test", Status.NEW);
         manager.createTask(task);
 
-        Task errorIdTask = new Task("task update", "test update", Status.DONE);
+        Task errorIdTask = new Task("com.practikum.tracker.task update", "test update", Status.DONE);
         errorIdTask.setId(manager.getId()); // назначаем несуществующий Id
 
         Assertions.assertDoesNotThrow(() -> manager.updateTask(errorIdTask), "вызвано исключение");
@@ -529,12 +530,12 @@ abstract class TaskManagerTest<T extends TaskManager> {
         LocalDateTime startOld = LocalDateTime.of(2022, 5, 12, 8, 30, 0);
         Duration durationOLd = Duration.ofMinutes(30);
 
-        Subtask subtask = new Subtask("task", "test", Status.NEW, epic.getId());
+        Subtask subtask = new Subtask("com/practikum/tracker/model", "test", Status.NEW, epic.getId());
         subtask.setStartTime(startOld);
         subtask.setDuration(durationOLd);
         manager.createSubtask(subtask);
 
-        Subtask expected = new Subtask("task update", "test update", Status.DONE, epic.getId());
+        Subtask expected = new Subtask("com.practikum.tracker.task update", "test update", Status.DONE, epic.getId());
         expected.setId(subtask.getId());
         expected.setStartTime(startOld);
         expected.setDuration(Duration.ofMinutes(15));
@@ -549,9 +550,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertTrue(epic.getStartTime().isEqual(actual.getStartTime()));
         Assertions.assertTrue(epic.getEndTime().isEqual(actual.getEndTime()));
 
-        List<Task> tasks = manager.getPrioritizedTasks();
+        TreeSet<Task> tasks = manager.getPrioritizedTasks();
         Assertions.assertEquals(1, tasks.size());
-        Assertions.assertEquals(actual, tasks.get(0));
+        Assertions.assertEquals(actual, tasks.first());
     }
 
     @Test
@@ -569,10 +570,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic = new Epic("epic", "test");
         manager.createEpic(epic);
 
-        Subtask subtask = new Subtask("task", "test", Status.NEW, epic.getId());
+        Subtask subtask = new Subtask("com/practikum/tracker/model", "test", Status.NEW, epic.getId());
         manager.createSubtask(subtask);
 
-        Subtask errorIdSubtask = new Subtask("task update", "test update", Status.DONE, epic.getId());
+        Subtask errorIdSubtask = new Subtask("com.practikum.tracker.task update", "test update", Status.DONE, epic.getId());
         errorIdSubtask.setId(manager.getId()); // назначаем несуществующий Id
 
         Assertions.assertDoesNotThrow(() -> manager.updateTask(errorIdSubtask), "вызвано исключение");
@@ -593,11 +594,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic = new Epic("epic", "test");
         manager.createEpic(epic);
 
-        Subtask subtask = new Subtask("task", "test", Status.NEW, epic.getId());
+        Subtask subtask = new Subtask("com/practikum/tracker/model", "test", Status.NEW, epic.getId());
         manager.createSubtask(subtask);
 
         // назначаем несуществующий id epic
-        Subtask errorIdEpicSubtask = new Subtask("task update", "test update", Status.DONE, manager.getId());
+        Subtask errorIdEpicSubtask = new Subtask("com.practikum.tracker.task update", "test update", Status.DONE, manager.getId());
         errorIdEpicSubtask.setId(subtask.getId());
 
         Assertions.assertDoesNotThrow(() -> manager.updateTask(errorIdEpicSubtask), "вызвано исключение");
@@ -631,7 +632,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void standardActionRemoveTask(){
-        Task task = new Task("task", "test", Status.NEW);
+        Task task = new Task("com/practikum/tracker/model", "test", Status.NEW);
         manager.createTask(task);
 
         Task expected = manager.getTask(task.getId());
@@ -736,18 +737,18 @@ abstract class TaskManagerTest<T extends TaskManager> {
         LocalDateTime start = LocalDateTime.of(2022, 5, 12, 8, 30, 0);
         Duration duration = Duration.ofMinutes(30);
 
-        Task t1 = new Task("task 0", "test", Status.NEW);
+        Task t1 = new Task("com.practikum.tracker.task 0", "test", Status.NEW);
         t1.setStartTime(start);
         t1.setDuration(duration);
 
-        Task t2 = new Task("task 1", "test", Status.IN_PROGRESS);
+        Task t2 = new Task("com.practikum.tracker.task 1", "test", Status.IN_PROGRESS);
         t2.setStartTime(start.minus(duration));
         t2.setDuration(duration);
-        Task t3 = new Task("task 3", "test", Status.DONE);
+        Task t3 = new Task("com.practikum.tracker.task 3", "test", Status.DONE);
         t3.setStartTime(start);
         t3.setDuration(duration);
-        Task t4 = new Task("task 4", "test", Status.DONE);
-        Task t5 = new Task("task 5", "test", Status.DONE);
+        Task t4 = new Task("com.practikum.tracker.task 4", "test", Status.DONE);
+        Task t5 = new Task("com.practikum.tracker.task 5", "test", Status.DONE);
 
         manager.createTask(t1);
         manager.createTask(t2);
@@ -756,7 +757,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.createTask(t5);
 
         Task[] expected = {t2, t1, t3, t4, t5};
-        List<Task> actual = manager.getPrioritizedTasks();
+        TreeSet<Task> actual = manager.getPrioritizedTasks();
         Assertions.assertArrayEquals(expected, actual.toArray());
     }
 }

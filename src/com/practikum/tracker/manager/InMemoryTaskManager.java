@@ -1,9 +1,10 @@
-package manager;
+package com.practikum.tracker.manager;
 
-import task.Epic;
-import task.Status;
-import task.Subtask;
-import task.Task;
+import com.practikum.tracker.history.HistoryManager;
+import com.practikum.tracker.model.Epic;
+import com.practikum.tracker.model.Status;
+import com.practikum.tracker.model.Subtask;
+import com.practikum.tracker.model.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -131,9 +132,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void createTask(Task task) {
         if (task != null) {
-            if (!isValidStartTime(task)) { // валидация по времени
+
+            try {
+                validateStartTime(task);
+            } catch (ManagerValidateException e) {
                 task.setStartTime(getFirstFreeTime(task));
             }
+
             if (task.isNotSetId()) {
                 task.setId(getId());
             }
@@ -146,9 +151,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void createSubtask(Subtask subtask) {
         if (subtask != null) {
-            if (!isValidStartTime(subtask)) { // валидация по времени
+            try {
+                validateStartTime(subtask);
+            } catch (ManagerValidateException e) {
                 subtask.setStartTime(getFirstFreeTime(subtask));
             }
+
             long idEpic = subtask.getIdEpic();
             if (epics.containsKey(idEpic)) {
                 if (subtask.isNotSetId()) {
@@ -183,9 +191,13 @@ public class InMemoryTaskManager implements TaskManager {
                 // удаляем старый
                 Task old = tasks.get(newTask.getId());
                 priority.remove(old);
-                if (!isValidStartTime(newTask)) { // проверяем
+
+                try {
+                    validateStartTime(newTask);
+                } catch (ManagerValidateException e) {
                     newTask.setStartTime(getFirstFreeTime(newTask));
                 }
+
                 priority.add(newTask); // добавляем новый
                 tasks.replace(newTask.getId(), newTask);
             }
@@ -200,11 +212,15 @@ public class InMemoryTaskManager implements TaskManager {
                 // удаляем старый
                 Subtask old = subtasks.get(newSubtask.getId());
                 priority.remove(old);
-                if (!isValidStartTime(newSubtask)) { // проверяем
+
+                try {
+                    validateStartTime(newSubtask);
+                }
+                catch (ManagerValidateException e) {
                     newSubtask.setStartTime(getFirstFreeTime(newSubtask));
                 }
-                priority.add(newSubtask); // добавляем новый
 
+                priority.add(newSubtask); // добавляем новый
                 subtasks.replace(newSubtask.getId(), newSubtask);
                 defineStateEpic(newSubtask.getIdEpic());
             }
@@ -262,7 +278,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    // 3.1 Получение списка подзадач определённого task.Epic
+    // 3.1 Получение списка подзадач определённого com.practikum.tracker.task.Epic
     @Override
     public List<Subtask> getSubtasksEpic(Long id) {
         List<Subtask> request = new ArrayList<>();
@@ -346,12 +362,12 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public List<Task> getPrioritizedTasks() {
-        return new ArrayList<>(priority);
+    public TreeSet<Task> getPrioritizedTasks() {
+        return priority;
     }
 
-    public boolean isValidStartTime(Task task) {
-        if (task == null) return false;
+    private void validateStartTime(Task task) {
+        if (task == null) throw new ManagerValidateException("Task == null");
 
         if (task.getStartTime() != null && task.getDuration() != null) {
             LocalDateTime startTask = task.getStartTime();
@@ -360,16 +376,21 @@ public class InMemoryTaskManager implements TaskManager {
             for (Task t: priority) {
                 LocalDateTime start = t.getStartTime();
                 LocalDateTime end = t.getEndTime();
+                String massage = startTask.toString() + " intersect " + task.toString();
 
-                if (startTask.isEqual(start)) return false;
-                if (endTask.isEqual(end)) return false;
+                if (startTask.isEqual(start) || endTask.isEqual(end))
+                    throw new ManagerValidateException(massage);
 
-                if (startTask.isBefore(start) && endTask.isAfter(end)) return false;
-                if (startTask.isAfter(start) && startTask.isBefore(end)) return false;
-                if (endTask.isAfter(start) && endTask.isBefore(end)) return false;
+                if (startTask.isBefore(start) && endTask.isAfter(end))
+                    throw new ManagerValidateException(massage);
+
+                if (startTask.isAfter(start) && startTask.isBefore(end))
+                    throw new ManagerValidateException(massage);
+
+                if (endTask.isAfter(start) && endTask.isBefore(end))
+                    throw new ManagerValidateException(massage);
             }
         }
-        return true;
     }
     public LocalDateTime getFirstFreeTime(Task task) {
         if (task == null) return null;

@@ -1,4 +1,4 @@
-package task;
+package com.practikum.tracker.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

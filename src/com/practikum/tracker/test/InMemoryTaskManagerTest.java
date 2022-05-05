@@ -1,7 +1,7 @@
-package manager;
+package com.practikum.tracker.test;
 
+import com.practikum.tracker.manager.InMemoryTaskManager;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
