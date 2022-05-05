@@ -8,7 +8,7 @@ import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager{
 
-    private static final String header = "id,type,name,status,description,epic\n";
+    private static final String header = "id,type,name,status,description,duration, start time,epic\n";
     private final File file;
 
     public FileBackedTasksManager(File file) {
@@ -24,8 +24,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
             if (in.available() > 0) {
                 String s = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                 String[] data = s.split("\n");
-                manager.initializationTaskManager(data);
-                manager.initializationHistoryManager(data);
+                if (data.length > 1) {
+                    manager.initializationTaskManager(data);
+                    manager.initializationHistoryManager(data);
+                }
             }
             return manager;
         } catch (IOException e) {
@@ -43,7 +45,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
             for (String s: getTaskInString()) {
                 out.write(s.getBytes(StandardCharsets.UTF_8));
             }
-            out.write(" \n".getBytes(StandardCharsets.UTF_8));
+            out.write("\n".getBytes(StandardCharsets.UTF_8));
             out.write(InMemoryHistoryManager.toString(history).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new ManagerSaveException();
@@ -197,8 +199,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
-        super.updateSubtask(subtask);
+    public void updateSubtask(Subtask newSubtask) {
+        super.updateSubtask(newSubtask);
         save();
     }
 

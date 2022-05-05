@@ -49,6 +49,7 @@ public interface TaskManager {
     // 3.1 Получение списка подзадач определённого task.Epic
 
     List<Subtask> getSubtasksEpic(Long id);
+    List<Task> getPrioritizedTasks();
 
     // 4.2 Управление статусами эпиков
     // внутренняя реализация конкретного класса и не является методом интерфейса
