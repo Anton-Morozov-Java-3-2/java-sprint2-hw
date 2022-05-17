@@ -178,6 +178,7 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.setId(getId());
             }
             long idEpic = epic.getId();
+            epic.clearSubtasks();
             epics.put(idEpic, epic);
             defineStateEpic(idEpic);
         }
@@ -228,11 +229,15 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateEpic(Epic epic) {
-        if (epic != null) {
-            if (epics.containsKey(epic.getId())) {
-                epics.replace(epic.getId(), epic);
-                defineStateEpic(epic.getId());
+    public void updateEpic(Epic newEpic) {
+        if (newEpic != null) {
+            if (epics.containsKey(newEpic.getId())) {
+                List<Long> subtask = epics.get(newEpic.getId()).getSubtasks();
+                for (Long id : subtask) {
+                    newEpic.addSubtask(id);
+                }
+                epics.replace(newEpic.getId(), newEpic);
+                defineStateEpic(newEpic.getId());
             }
         }
     }
@@ -376,6 +381,7 @@ public class InMemoryTaskManager implements TaskManager {
             for (Task t: priority) {
                 LocalDateTime start = t.getStartTime();
                 LocalDateTime end = t.getEndTime();
+                if (start == null) continue;
                 String massage = startTask.toString() + " intersect " + task.toString();
 
                 if (startTask.isEqual(start) || endTask.isEqual(end))
@@ -421,5 +427,10 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return history.getHistory();
     }
 }

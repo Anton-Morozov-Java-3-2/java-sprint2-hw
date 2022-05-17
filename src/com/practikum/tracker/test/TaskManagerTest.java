@@ -627,7 +627,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertNotNull(actual, "не сохранён");
         Assertions.assertEquals(updateEpic, actual, "не совпадают");
         Assertions.assertEquals(actual.getStatus(), Status.NEW, "статус неверен");
-        Assertions.assertTrue(actual.getSubtasks().isEmpty(), "список подзадач не пустой");
+        Assertions.assertEquals(1, actual.getSubtasks().size() , "список подзадач не пустой");
     }
 
     @Test

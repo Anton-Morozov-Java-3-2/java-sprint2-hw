@@ -47,13 +47,17 @@ public interface TaskManager {
     void removeSubtask(Long id);
     void removeEpic(Long id);
 
-    // 3.1 Получение списка подзадач определённого com.practikum.tracker.task.Epic
+    // 3.1 Получение списка подзадач определённого Epic
 
     List<Subtask> getSubtasksEpic(Long id);
-    TreeSet<Task> getPrioritizedTasks();
 
     // 4.2 Управление статусами эпиков
     // внутренняя реализация конкретного класса и не является методом интерфейса
+
+    // Получить список всех задач по приоритету
+    TreeSet<Task> getPrioritizedTasks();
+
+    List<Task> getHistory();
 }
 
 

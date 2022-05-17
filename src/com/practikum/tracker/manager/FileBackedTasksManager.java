@@ -12,15 +12,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
     private static final String header = "id,type,name,status,description,duration, start time,epic\n";
     private final File file;
 
-    public FileBackedTasksManager(File file) {
+    public FileBackedTasksManager(String file) {
         super();
-        this.file = file;
+        this.file = new File(file);
     }
 
-    public static FileBackedTasksManager loadFromFile(File file) {
+    public static FileBackedTasksManager loadFromFile(String fileName) {
+        File file = new File(fileName);
 
         try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(file))) {
-            FileBackedTasksManager manager = new FileBackedTasksManager(file);
+            FileBackedTasksManager manager = new FileBackedTasksManager(fileName);
 
             if (in.available() > 0) {
                 String s = new String(in.readAllBytes(), StandardCharsets.UTF_8);
@@ -36,11 +37,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
         }
     }
 
+    @Override
     public List<Task> getHistory() {
         return history.getHistory();
     }
 
-    private void save()  {
+    void save()  {
         try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file))) {
             out.write(header.getBytes(StandardCharsets.UTF_8));
             for (String s: getTaskInString()) {
@@ -231,7 +233,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager{
 
     public static void main(String[] args) {
 
-        File file = new File("file.csv");
+        String file = "file.csv";
 
         FileBackedTasksManager old = new FileBackedTasksManager(file);
 

@@ -11,17 +11,16 @@ import com.practikum.tracker.model.Task;
 
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 
 public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
-    private File file;
+    private String file;
 
     @BeforeEach
     public void initManager() {
-        file = new File("file.csv");
+        file = "file.csv";
         manager = new FileBackedTasksManager(file);
     }
 
@@ -29,7 +28,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackedTasksM
     public void standardActionSave(){
         StringBuilder savedString = new StringBuilder();
 
-        Task task = new Task("com.practikum.tracker.task 0", "test", Status.NEW);
+        Task task = new Task("task 0", "test", Status.NEW);
         task.setDefaultTimeAndDuration();
         manager.createTask(task);
 
@@ -104,7 +103,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackedTasksM
         manager.getSubtask(subtask1.getId());
         manager.getEpic(epic.getId());
 
-        final FileBackedTasksManager[] serialize = new FileBackedTasksManager[1];
+        FileBackedTasksManager[] serialize = new FileBackedTasksManager[1];
         Assertions.assertDoesNotThrow(
                 () -> {
                     serialize[0] = FileBackedTasksManager.loadFromFile(file);},
@@ -220,6 +219,7 @@ public class FileBackendTaskManagerTest extends TaskManagerTest<FileBackedTasksM
 
 
         Epic epic = new Epic("epic 0", "test");
+        epic.setStatus(Status.NEW);
         manager.createEpic(epic);
 
         savedString.append(epic.toString());

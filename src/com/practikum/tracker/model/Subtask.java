@@ -2,6 +2,8 @@ package com.practikum.tracker.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Subtask extends Task{
     private long idEpic;
@@ -51,6 +53,22 @@ public class Subtask extends Task{
         boolean isEqualTask = super.equals(o);
         Subtask subtask = (Subtask) o;
         return isEqualTask && idEpic == subtask.getIdEpic();
+    }
+
+    public String toJSON(){
+        return getObjectJSON().toJson(this);
+    }
+
+    public static Task fromJSON(String json){
+        return getObjectJSON().fromJson(json, Subtask.class);
+    }
+
+    public static List<Task> tasksFromJSON(String json){
+        if (json.isEmpty()) {
+            return new ArrayList<>();
+        } else {
+            return List.of(getObjectJSON().fromJson(json, Subtask[].class));
+        }
     }
 }
 

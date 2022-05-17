@@ -1,6 +1,7 @@
 package com.practikum.tracker.test;
 
 import com.practikum.tracker.history.HistoryManager;
+import com.practikum.tracker.model.Epic;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import com.practikum.tracker.model.Status;
@@ -38,6 +39,27 @@ public abstract class HistoryManagerTest  {
         Assertions.assertNotNull(history, "история не пустая");
         Assertions.assertEquals(1, history.size(),"история не пустая");
         Assertions.assertEquals(task, history.get(0), "объекты не совпадают");
+    }
+    @Test
+    public void actionAddDoubleDuplicateTask() {
+        Epic epic = new Epic("epic0", "test");
+        epic.setId(0L);
+
+        Task task1 = new Task("task1", "test", Status.NEW);
+        task1.setId(1L);
+
+        manager.add(epic);
+        manager.add(task1);
+        manager.add(task1);
+        manager.add(epic);
+
+        List<Task> history = manager.getHistory();
+
+        List<Task> expected = List.of(task1, epic);
+
+        Assertions.assertNotNull(history, "история не пустая");
+        Assertions.assertEquals(2, history.size(),"история не пустая");
+        Assertions.assertArrayEquals(expected.toArray(), history.toArray(), "объекты не совпадают");
     }
 
     @Test

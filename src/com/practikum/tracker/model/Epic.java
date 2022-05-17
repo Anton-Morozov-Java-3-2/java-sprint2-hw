@@ -7,7 +7,6 @@ import java.util.List;
 
 public class Epic extends Task{
     private final ArrayList<Long> subtasks;
-
     private LocalDateTime endTime;
 
     @Override
@@ -75,6 +74,10 @@ public class Epic extends Task{
         return isEqualTask;
     }
 
+    public void clearSubtasks() {
+        subtasks.clear();
+    }
+
     @Override
     public LocalDateTime getEndTime(){
         return endTime;
@@ -82,5 +85,21 @@ public class Epic extends Task{
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    public String toJSON(){
+        return getObjectJSON().toJson(this);
+    }
+
+    public static Task fromJSON(String json){
+        return getObjectJSON().fromJson(json, Epic.class);
+    }
+
+    public static List<Task> tasksFromJSON(String json){
+        if (json.isEmpty()) {
+            return new ArrayList<>();
+        } else {
+            return List.of(getObjectJSON().fromJson(json, Epic[].class));
+        }
     }
 }

@@ -1,8 +1,16 @@
 package com.practikum.tracker.model;
 
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Task {
     private String title;
@@ -74,10 +82,17 @@ public class Task {
         } else if (task.getStartTime() != null && task.getDuration() != null) {
             return false;
         } else {
-            return id == task.getId() &&
-                    title.equals(task.getTitle()) &&
-                    description.equals(task.getDescription()) &&
-                    status.equals(task.getStatus());
+            if (status != null) {
+                return id == task.getId() &&
+                        title.equals(task.getTitle()) &&
+                        description.equals(task.getDescription()) &&
+                        status.equals(task.getStatus());
+            } else {
+                return id == task.getId() &&
+                        title.equals(task.getTitle()) &&
+                        description.equals(task.getDescription()) &&
+                        status.equals(task.getStatus());
+            }
         }
     }
 
@@ -124,7 +139,11 @@ public class Task {
     }
 
     public LocalDateTime getEndTime(){
-        return startTime.plus(duration);
+        if (startTime != null) {
+            return startTime.plus(duration);
+        } else {
+            return null;
+        }
     }
 
     public void setDefaultTimeAndDuration(){
@@ -132,5 +151,70 @@ public class Task {
         startTime = LocalDateTime.now().withNano(0);
 
         duration = Duration.ofMinutes(DEFAULT_DURATION_MINUTES);
+    }
+
+    public static Gson getObjectJSON() {
+        return new GsonBuilder().registerTypeAdapter(LocalDateTime.class,
+                new LocalDateAdapter()).registerTypeAdapter(Duration.class,
+                new DurationAdapter()).create();
+    }
+
+    public String toJSON(){
+        return getObjectJSON().toJson(this);
+    }
+
+    public static Task fromJSON(String json){
+        return getObjectJSON().fromJson(json, Task.class);
+    }
+
+    public static List<Task> tasksFromJSON(String json){
+        if (json.isEmpty()) {
+            return new ArrayList<>();
+        } else {
+            return List.of(getObjectJSON().fromJson(json, Task[].class));
+        }
+    }
+}
+
+class LocalDateAdapter extends TypeAdapter<LocalDateTime> {
+
+    @Override
+    public void write(JsonWriter jsonWriter, LocalDateTime localDateTime) throws IOException {
+        if (localDateTime != null) {
+            jsonWriter.value(localDateTime.format(Task.format));
+        } else {
+            jsonWriter.value("null");
+        }
+    }
+
+    @Override
+    public LocalDateTime read(JsonReader jsonReader) throws IOException {
+        String json = jsonReader.nextString();
+        if (json.equals("null")) {
+            return null;
+        } else {
+            return LocalDateTime.parse(json, Task.format);
+        }
+    }
+}
+
+class DurationAdapter extends TypeAdapter<Duration> {
+    @Override
+    public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
+        if (duration != null) {
+            jsonWriter.value(duration.toMinutes());
+        } else {
+            jsonWriter.value("null");
+        }
+    }
+
+    @Override
+    public Duration read(JsonReader jsonReader) throws IOException {
+        String json = jsonReader.nextString();
+        if (json.equals("null")) {
+            return null;
+        }  else {
+            return Duration.ofMinutes(Long.parseLong(json));
+        }
     }
 }
